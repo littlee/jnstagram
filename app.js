@@ -3,12 +3,17 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var passport = require('passport');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var auth = require('./auth.js');
 
 var app = express();
+
+mongoose.connect('mongodb://localhost/jnstagram');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,11 +26,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(cookieParser());
+app.use(cookieParser('abc'));
+app.use(session({
+	secret: 'this is session',
+	resave: false,
+	saveUninitialized: false
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
+auth();
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', routes);
-app.use('/users', users);
+app.get('*', function(req, res) {
+	res.sendFile(path.join(__dirname, '/public/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
