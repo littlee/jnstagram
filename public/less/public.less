@@ -1,15 +1,14 @@
 @j-main: #125688;
 @j-sub: #b62077;
 
-.trim-col {
-	padding-left: 0;
-	padding-right: 0;
-}
+.clearfix() {
+	&:before,
+	&:after {
+		content: "";
+		display: table;
+	}
 
-.trim-left {
-	padding-left: 0;
-}
-
-.trim-right {
-	padding-right: 0;
+	&:after {
+		clear: both;
+	}
 }

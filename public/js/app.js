@@ -1,5 +1,6 @@
 require('../css/bootstrap.css');
-require('cssgram/source/css/cssgram.css');
+require('../css/cssgram.min.css');
+require('../less/J.less');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -20,6 +21,8 @@ var rootRoute = {
 			require('./routes/SignIn.js'),
 			require('./routes/SignUp.js'),
 			require('./routes/Search.js'),
+			require('./routes/Post.js'),
+			require('./routes/Share.js'),
 			{
 				path: '*',
 				component: require('./components/NotFound.js')

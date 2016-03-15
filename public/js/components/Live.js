@@ -1,6 +1,7 @@
 var React = require('react');
 
 var Header = require('./Header.js');
+var MenuBtns = require('./MenuBtns.js');
 
 var Live = React.createClass({
 	render: function() {
@@ -12,6 +13,7 @@ var Live = React.createClass({
 					<div className="toaster">
 						<img src="/images/test.jpg" />
 					</div>
+					<MenuBtns />
 				</div>
 			</div>
 			);

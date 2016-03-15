@@ -11,5 +11,9 @@ module.exports = {
 
 				cb(res.body);
 			});
+	},
+
+	saveUser: function(user) {
+		sessionStorage.setItem('j_user', JSON.stringify(user));
 	}
 };

@@ -1,19 +1,9 @@
 function isSignedIn() {
-	var a = false;
-	// a = true;
-	return a;
+	// return true;
+	return sessionStorage.getItem('j_user') !== null;
 }
 
 var J = {};
-
-// J.redirectToSignin = function(nextState, replace) {
-// 	if (!isSignedIn()) {
-// 		replace({
-// 			pathname: '/signin',
-// 			nextPathname: nextState.location.pathname
-// 		});
-// 	}
-// };
 
 J.redirectToSignin = function(nextState, replace) {
 	if (!isSignedIn()) {

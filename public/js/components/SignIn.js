@@ -3,7 +3,7 @@ var React = require('react');
 var Link = require('react-router').Link;
 var browserHistory = require('react-router').browserHistory;
 
-var fto = require('form_to_object/dist/formToObject.js');
+var fto = require('form_to_object');
 var SignInUtil = require('../utils/SignInUtil.js');
 
 var SignIn = React.createClass({
@@ -80,6 +80,8 @@ var SignIn = React.createClass({
 				browserHistory.push({
 					pathname: '/'
 				});
+
+				SignInUtil.saveUser(res.user);
 			}
 		});
 		return false;

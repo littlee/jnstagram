@@ -1,7 +1,9 @@
 require('../../less/signup.less');
 var React = require('react');
 var Link = require('react-router').Link;
-var fto = require('form_to_object/dist/formToObject.js');
+var browserHistory = require('react-router').browserHistory;
+
+var fto = require('form_to_object');
 var SignUpUtil = require('../utils/SignUpUtil.js');
 
 var SignUpAvatar = React.createClass({
@@ -17,7 +19,6 @@ var SignUpAvatar = React.createClass({
 						照片
 					</button>
 				}
-				
 				<input type="file" className="signup-avatar-file" ref="afile" accept="image/*" onChange={this.props._handleChooseFile}/>
 			</div>
 			);
@@ -32,7 +33,8 @@ var SignUp = React.createClass({
 
 	getInitialState: function () {
 		return {
-			src: null
+			src: null,
+			file: null 
 		};
 	},
 	
@@ -90,6 +92,10 @@ var SignUp = React.createClass({
 	_handleChooseFile: function(e) {
 		var f = e.target;
 		if (f.files && f.files[0]) {
+			this.setState({
+				file: f.files[0]
+			});
+
 			var reader = new FileReader();
 
 			reader.onload = function(e) {
@@ -105,10 +111,38 @@ var SignUp = React.createClass({
 	_handleSignUp: function(e) {
 		e.preventDefault();
 		var data = fto(e.target);
+		var fd = new FormData();
 
-		SignUpUtil.signup(data, function(res) {
-			console.log(res);
-		});
+		function _signup(data) {
+			SignUpUtil.signup(data, function(res) {
+				if (res.success) {
+					alert('注册成功');
+					browserHistory.push({
+						pathname: '/signin'
+					});
+				}
+				else {
+					alert(res.message);
+				}
+			});
+		}
+
+		if (this.state.file !== null) {
+			fd.append('file', this.state.file);
+
+			SignUpUtil.uploadProfile(fd, function(res) {
+				if (!res.success) {
+					alert(res.message);
+					return;
+				}
+				data.profile_pic = res.filename;
+
+				_signup(data);
+			});
+		}
+		else {
+			_signup(data);
+		}
 		return false;
 	}
 });

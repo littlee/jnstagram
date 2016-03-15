@@ -1,0 +1,68 @@
+@import "public.less";
+
+.share {
+	background-color: #FAFAFA;
+
+	&-text {
+		.clearfix();
+		background-color: #fff;
+		padding: 10px;
+		border-bottom: 1px solid #C9CBCC;
+	}
+
+	&-img-wrapper {
+		width: 64px;
+		float: left;
+	}
+
+	&-caption {
+		overflow: hidden;
+
+		> .form-control {
+			resize: none;
+			border-radius: 0;
+			border: none;
+			box-shadow: none;
+			height: 64px;
+		}
+	}
+
+	&-location {
+		background-color: #fff;
+		margin-top: 15px;
+		border-top: 1px solid #C9CBCC;
+		border-bottom: 1px solid #C9CBCC;
+	
+		&-position {
+			padding: 5px;
+
+			> .glyphicon {
+				margin-right: 5px;
+				color: #A5A7AA;
+			}
+		}
+
+		&-item {
+			background-color: #EDEEEE;
+			padding: 5px 10px;
+			border-radius: 5px;
+			display: inline-block;
+		}
+	}
+
+	&-btn {
+		background-color: #4090DB;
+		border: none;
+		padding: 10px;
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		z-index: 99;
+		color: #fff;
+		width: 100%;
+		text-align: center;
+		display: block;
+		font-size: 20px;
+		font-weight: bold;
+	}
+}
