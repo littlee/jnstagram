@@ -5,6 +5,11 @@ var Link = require('react-router').Link;
 
 var MenuBtns = React.createClass({
 	render: function() {
+		var userUrl = '/signin';
+		if (sessionStorage.getItem('j_user') !== null) {
+			userUrl = '/user/' + JSON.parse(sessionStorage.getItem('j_user')).username;
+		}
+
 		return (
 			<div className="menu-btns">
 				<IndexLink to="/" className="menu-btns-item" activeClassName="active">
@@ -19,7 +24,7 @@ var MenuBtns = React.createClass({
 				<Link to="/message" className="menu-btns-item" activeClassName="active">
 					<span className="glyphicon glyphicon-comment" />
 				</Link>
-				<Link to="/me" className="menu-btns-item" activeClassName="active">
+				<Link to={userUrl} className="menu-btns-item" activeClassName="active">
 					<span className="glyphicon glyphicon-user" />
 				</Link>
 			</div>

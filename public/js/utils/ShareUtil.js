@@ -1,8 +1,9 @@
+var request = require('superagent');
 var ShareActionCreators = require('../actions/ShareActionCreators.js');
 module.exports = {
 	getPost: function() {
 		setTimeout(function() {
-			var jPost = JSON.parse(localStorage.getItem('j_post'));
+			var jPost = JSON.parse(sessionStorage.getItem('j_post'));
 			var p = {};
 			p.src = jPost.previewSrc;
 			p.filter = jPost.filter;
@@ -14,6 +15,10 @@ module.exports = {
 
 			ShareActionCreators.receivePost(p);
 		}, 0);
+	},
+
+	removePost: function() {
+		sessionStorage.removeItem('j_post');
 	},
 
 	getLocation: function() {
@@ -35,5 +40,14 @@ module.exports = {
 				});
 			});
 		});
+	},
+
+	sendPost: function(data, cb) {
+		request
+			.post('/share')
+			.send(data)
+			.end(function(err, res) {
+				cb(res.body);
+			});
 	}
 };

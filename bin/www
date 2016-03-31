@@ -20,6 +20,8 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var JSocket = require('../j.socket.js');
+JSocket.init(server);
 
 /**
  * Listen on provided port, on all network interfaces.

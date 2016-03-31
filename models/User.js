@@ -4,11 +4,14 @@ var Schema = mongoose.Schema;
 var userSchema = mongoose.Schema({
 	username: String,
 	password: String,
-	profile_pic: String,
-	posts: {
+	profile_pic: {
+		type: String,
+		default: '/images/default_avatar.jpg'
+	},
+	posts: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Post'
-	}
+	}]
 });
 
 var User = mongoose.model('User', userSchema);

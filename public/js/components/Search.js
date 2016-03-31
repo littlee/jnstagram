@@ -1,11 +1,19 @@
 var React = require('react');
+var Header = require('./Header.js');
+var MenuBtns = require('./MenuBtns.js');
 
-var Live = React.createClass({
+var Search = React.createClass({
 	render: function() {
 		return (
-			<h1>SEARCH</h1>
+			<div className="row">
+				<div className="col-xs-12 trim-col">
+					<Header />
+					<h1>Search</h1>
+					<MenuBtns />
+				</div>
+			</div>
 			);
 	}
 });
 
-module.exports = Live;
+module.exports = Search;

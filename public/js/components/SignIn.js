@@ -8,6 +8,16 @@ var SignInUtil = require('../utils/SignInUtil.js');
 
 var SignIn = React.createClass({
 
+	// childContextType: {
+	// 	location: React.PropTypes.object
+	// },
+
+	// getChildContext: function(){
+	// 	return {
+	// 		location: this.props.location
+	// 	};
+	// },
+
 	getInitialState: function() {
 		return {
 			alert: null
@@ -77,13 +87,21 @@ var SignIn = React.createClass({
 		var data = fto(e.target);
 		SignInUtil.signin(data, function(res) {
 			if (res.success) {
-				browserHistory.push({
+				SignInUtil.saveUser(res.user);
+				if (this.props.location.state && this.props.location.state.nextPathname) {
+					browserHistory.replace({
+						pathname: this.props.location.state.nextPathname
+					});
+					return;
+				}
+				browserHistory.replace({
 					pathname: '/'
 				});
-
-				SignInUtil.saveUser(res.user);
+				return;
 			}
-		});
+
+			alert(res.info.message);
+		}.bind(this));
 		return false;
 	}
 });

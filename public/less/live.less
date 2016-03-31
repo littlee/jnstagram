@@ -1,0 +1,98 @@
+@import "public.less";
+
+.live {
+	margin-bottom: 50px;
+	&-title {
+		border-bottom: 3px solid #aaa;
+		text-align: center;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
+	
+&-post {
+	&-user {
+		padding: 10px;
+	}
+
+	&-profile-pic {
+		border-radius: 50%;
+		border: 1px solid #eee;
+	}
+
+	&-author-name {
+		color: #125688;
+		margin-left: 10px;
+		margin-right: 5px;
+		font-weight: bold;
+	}
+
+	&-time {
+		float: right;
+		color: #a5a7aa;
+		font-size: small;
+	}
+
+	&-options {
+		color: #898c8d;
+		padding: 0 10px;
+		border-bottom: 1px solid #e6e6e6;
+		margin-left: 10px;
+		margin-right: 10px;
+		cursor: pointer;
+	}
+
+	&-option {
+		display: inline-block;
+		font-size: 24px;
+		color: #898c8d;
+
+		&.active {
+			color: #cc232f;
+		}
+
+		& + & {
+			margin-left: 15px;
+		}
+	}
+
+	&-info {
+		padding: 5px 10px;
+	}
+
+	&-location {
+		color: #4090DB;
+	}
+
+	&-caption {
+		padding: 0 10px;
+	}
+
+	&-like {
+		padding: 5px 10px;
+		
+		&-link {
+			> .glyphicon {
+				margin-right: 5px;
+			}	
+		}
+	}
+
+	&-comments {
+		padding: 5px 10px;
+
+		&-count {
+			color: #A9ABAE;
+		}
+	}
+
+	&-username {
+		color: #125688;
+		margin-left: 5px;
+		margin-right: 5px;
+		font-weight: bold;
+	}
+}
+}

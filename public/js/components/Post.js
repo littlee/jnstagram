@@ -59,7 +59,7 @@ var PostSettingRange = React.createClass({
 				max: 2,
 				step: 0.1
 			},
-			'hue-rotate': {
+			'hueRotate': {
 				min: 0,
 				max: 360,
 				step: 5
@@ -168,7 +168,6 @@ var Post = React.createClass({
 				'slumber',
 				'toaster',
 				'walden',
-				'willow',
 				'xpro2'
 			],
 
@@ -176,7 +175,7 @@ var Post = React.createClass({
 				'blur',
 				'brightness',
 				'contrast',
-				'hue-rotate',
+				'hueRotate',
 				'saturate'
 			]
 		};
@@ -213,7 +212,7 @@ var Post = React.createClass({
 						<div className={'post-pick ' + this.state.filter}>
 							<img src={this._getPreviewSrc()} className="post-pick-img" style={settingStyle} onClick={this._openFileDialog}/>
 						</div>
-						<input type="file" ref="pfile" onChange={this._handleChooseFile} className="post-pick-file"/>
+						<input type="file" ref="pfile" onChange={this._handleChooseFile} className="post-pick-file" accept="image/*"/>
 						{
 							this.state.setting === '' ?
 							<div className="post-edit">

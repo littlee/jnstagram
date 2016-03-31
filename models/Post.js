@@ -40,7 +40,10 @@ var postSchema = mongoose.Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	caption: String,
+	caption: {
+		type: String,
+		default: ''
+	},
 	tags: [String],
 	location: String,
 	post_time: {

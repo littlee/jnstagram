@@ -7,8 +7,6 @@ var ReactDOM = require('react-dom');
 var Router = require('react-router').Router;
 var browserHistory = require('react-router').browserHistory;
 
-var J = require('./J.js');
-
 var rootRoute = {
 	component: 'div',
 	childRoutes: [{
@@ -23,6 +21,7 @@ var rootRoute = {
 			require('./routes/Search.js'),
 			require('./routes/Post.js'),
 			require('./routes/Share.js'),
+			require('./routes/User.js'),
 			{
 				path: '*',
 				component: require('./components/NotFound.js')
