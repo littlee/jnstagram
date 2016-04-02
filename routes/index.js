@@ -11,8 +11,10 @@ var JSocket = require('../j.socket.js');
 
 var JWT_PUBLIC_KEY = 'J_JWT_PUBLIC_KEY';
 
-function validateJWT(t) {
-	return jwt.verify(t, JWT_PUBLIC_KEY);
+function validateJWT(t, cb) {
+	return jwt.verify(t, JWT_PUBLIC_KEY, function(err, decode) {
+		cb(err, decode);
+	});
 }
 
 // module.exports = router;
