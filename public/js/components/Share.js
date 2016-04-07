@@ -23,7 +23,7 @@ var Share = React.createClass({
 	componentDidMount: function() {
 		ShareStore.addChangeListener(this._onChange);
 		ShareUtil.getPost();
-		// ShareUtil.getLocation();
+		ShareUtil.getLocation();
 	},
 
 	componentWillUnmount: function() {

@@ -1,22 +1,15 @@
 require('../../less/signin.less');
 var React = require('react');
 var Link = require('react-router').Link;
-var browserHistory = require('react-router').browserHistory;
 
 var fto = require('form_to_object');
 var SignInUtil = require('../utils/SignInUtil.js');
 
 var SignIn = React.createClass({
 
-	// childContextType: {
-	// 	location: React.PropTypes.object
-	// },
-
-	// getChildContext: function(){
-	// 	return {
-	// 		location: this.props.location
-	// 	};
-	// },
+	contextTypes: {
+		router: React.PropTypes.object
+	},
 
 	getInitialState: function() {
 		return {
@@ -88,15 +81,12 @@ var SignIn = React.createClass({
 		SignInUtil.signin(data, function(res) {
 			if (res.success) {
 				SignInUtil.saveUser(res.user);
+				SignInUtil.saveToken(res.token);
 				if (this.props.location.state && this.props.location.state.nextPathname) {
-					browserHistory.replace({
-						pathname: this.props.location.state.nextPathname
-					});
+					this.context.router.replace(this.props.location.state.nextPathname);
 					return;
 				}
-				browserHistory.replace({
-					pathname: '/'
-				});
+				this.context.router.replace('/');
 				return;
 			}
 

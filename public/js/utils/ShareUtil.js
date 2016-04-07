@@ -1,5 +1,8 @@
 var request = require('superagent');
 var ShareActionCreators = require('../actions/ShareActionCreators.js');
+
+var J = require('../J.js');
+
 module.exports = {
 	getPost: function() {
 		setTimeout(function() {
@@ -45,6 +48,8 @@ module.exports = {
 	sendPost: function(data, cb) {
 		request
 			.post('/share')
+			.set('jwt', J.getToken())
+			.use(J.auth())
 			.send(data)
 			.end(function(err, res) {
 				cb(res.body);

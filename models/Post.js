@@ -42,10 +42,17 @@ var postSchema = mongoose.Schema({
 	},
 	caption: {
 		type: String,
-		default: ''
+		default: '',
+		index: true
 	},
-	tags: [String],
-	location: String,
+	tags: {
+		type: [String],
+		index: true
+	},
+	location: {
+		type: String,
+		index: true
+	},
 	post_time: {
 		type: Date,
 		default: Date.now
@@ -54,6 +61,10 @@ var postSchema = mongoose.Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	}],
+	likes_count: {
+		type: Number,
+		default: 0
+	},
 	comments: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Comment'

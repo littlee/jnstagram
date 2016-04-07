@@ -3,18 +3,27 @@ var request = require('superagent');
 
 var App = React.createClass({
 	componentDidMount: function() {
-		request
-			.get('/signedin')
-			.end(function(err, res) {
-				if (err) {
-					return err;
-				}
+		var localJWT = localStorage.getItem('jwt');
+		if (localJWT !== null) {
+			request
+				.get('/decodejwt')
+				.set('jwt', localJWT)
+				.end(function(err, res) {
+					if (err) {
+						return err;
+					}
 
-				if (res.body.success) {
-					sessionStorage.setItem('j_user', JSON.stringify(res.body.user));
+					if (res.body.success) {
+						localStorage.setItem('j_user', JSON.stringify(res.body.user));
+					}
+					else {
+						localStorage.removeItem('j_user');
+						localStorage.removeItem('jwt');
+					}
+
 					this.forceUpdate();
-				}
-			}.bind(this));
+				}.bind(this));
+		}
 	},
 
 	render: function() {

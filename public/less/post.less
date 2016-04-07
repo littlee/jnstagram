@@ -69,11 +69,21 @@
 			-webkit-overflow-scrolling: touch;
 			margin-bottom: 46px;
 			position: relative;
+
+			&-setting {
+				.post-edit-block-inner {
+					background-color: transparent;
+				}
+			}
 		}
 
 		&-block {
 			display: inline-block;
 			width: 64px;
+
+			&-inner {
+				background-color: #555;
+			}
 
 			& + & {
 				margin-left: 10px;
@@ -102,7 +112,7 @@
 			background-position: -64*2px 0;
 		}
 
-		&-hue-rotate {
+		&-hueRotate {
 			background-position: -64*3px 0;
 		}
 

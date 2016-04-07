@@ -133,7 +133,7 @@ var Settings = React.createClass({
 		}, this);
 
 		return (
-			<div className={'post-edit-item' + (this.props.show === true ? '' : ' hide')}>
+			<div className={'post-edit-item post-edit-item-setting ' + (this.props.show === true ? '' : ' hide')}>
 				{items}
 			</div>
 			);
@@ -227,7 +227,7 @@ var Post = React.createClass({
 
 								<Filters
 									filters={this.props.filters}
-									previewSrc={this._getPreviewSrc()}
+									previewSrc={this._getFilterPreview()}
 									show={this.state.edit === 'filter'}
 									_setFilter={this._setFilter} />
 
@@ -262,6 +262,14 @@ var Post = React.createClass({
 
 	_getPreviewSrc: function() {
 		return this.state.previewSrc === '' ? '/images/add_pic.jpg' : this.state.previewSrc;
+	},
+
+	_getFilterPreview: function() {
+		// return '';
+		// if (this.state.edit === 'setting') {
+		// 	return '';
+		// }
+		return this._getPreviewSrc();
 	},
 
 	_openFileDialog: function() {

@@ -14,6 +14,10 @@ module.exports = {
 	},
 
 	saveUser: function(user) {
-		sessionStorage.setItem('j_user', JSON.stringify(user));
+		localStorage.setItem('j_user', JSON.stringify(user));
+	},
+
+	saveToken: function(t) {
+		localStorage.setItem('jwt', t);
 	}
 };

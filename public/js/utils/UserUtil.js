@@ -6,13 +6,14 @@ module.exports = {
 	getUser: function(username) {
 		request
 			.get('/userprofile/' + username)
+			.set('jwt', J.getToken())
 			.use(J.auth())
 			.end(function(err, res) {
 				if (err) {
 					return err;
 				}
 
-				UserActionCreators.receiveUser(res.body);
+				UserActionCreators.receiveUser(res.body.user);
 			});
 
 	}

@@ -18,6 +18,7 @@ module.exports = {
 	toggleLike: function(data, cb) {
 		request
 			.post('/like')
+			.set('jwt', J.getToken())
 			.use(J.auth())
 			.send(data)
 			.end(function(err, res) {

@@ -1,5 +1,35 @@
 @import "public.less";
 
 .user {
-	
+	&-avatar {
+		padding: 10px;
+		text-align: center;
+
+		> img {
+			display: block;
+			margin: 0 auto;
+			border-radius: 50%;
+		}
+	}
+
+	&-name {
+		font-size: 24px;
+		font-weight: bold;
+		padding: 10px;
+	}
+
+	&-posts {
+		.clearfix();
+		border-top: 1px solid #C9CBCC;
+
+		.post-item {
+			float: left;
+			width: 100/3%;
+		}
+	}
+
+	&-btn-wrap {
+		padding: 30px;
+		margin-bottom: 50px;
+	}
 }

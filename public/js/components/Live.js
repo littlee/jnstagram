@@ -1,11 +1,11 @@
 require('../../less/live.less');
 var React = require('react');
 var Link = require('react-router').Link;
-var moment = require('moment');
-moment.locale('zh-CN');
 
 var Header = require('./Header.js');
 var MenuBtns = require('./MenuBtns.js');
+var PostItem = require('./PostItem.js');
+var TimeFromNow = require('./TimeFromNow.js');
 
 var LiveUtil = require('../utils/LiveUtil.js');
 
@@ -18,27 +18,25 @@ var LivePost = React.createClass({
 
 	render: function() {
 		var item = this.state.item;
-		var settingStyle = {
-			WebkitFilter: 'blur(' + item.setting.blur + 'px) '
-				+ 'brightness(' + item.setting.brightness + ') '
-				+ 'contrast(' + item.setting.contrast + ') '
-				+ 'hue-rotate(' + item.setting.hueRotate + 'deg) '
-				+ 'saturate(' + item.setting.saturate + ')'
-		};
 
 		var commentPreview = item.comments.slice(0, 2).map(function(comm, index) {
 			return (
 				<div className="live-post-comment" key={index}>
-					comment;
+					<Link to={'/user/' + comm.author.username} className="live-post-comment-name">
+						{comm.author.username}
+					</Link>
+					<span>
+						{comm.text}
+					</span>
 				</div>
 				);
 		});
 
 		var userLike = false;
-		if (sessionStorage.getItem('j_user') !== null) {
+		if (localStorage.getItem('j_user') !== null) {
 
-			var uid = JSON.parse(sessionStorage.getItem('j_user'))._id;
-				if (item.likes.indexOf(uid) >= 0) {
+			var uid = JSON.parse(localStorage.getItem('j_user'))._id;
+			if (item.likes.indexOf(uid) >= 0) {
 				userLike = true;
 			}
 		}
@@ -51,16 +49,12 @@ var LivePost = React.createClass({
 						{item.author.username}
 					</Link>
 				</div>
-				<div className={item.filter}>
-					<img src={item.src} width="100%" style={settingStyle}/>
-				</div>
+				<PostItem filter={item.filter} src={item.src} setting={item.setting} />
 				<div className="live-post-info">
 					<span className="live-post-location">
 						{item.location}
 					</span>
-					<span className="live-post-time">
-						{moment(item.post_time).fromNow()}
-					</span>
+					<TimeFromNow className="live-post-time" time={item.post_time}/>
 				</div>
 				<div className="live-post-options">
 					<span className={'live-post-option' + (userLike ? ' active' : '')} onClick={this._toggleLike.bind(this, item._id)}>
@@ -73,7 +67,7 @@ var LivePost = React.createClass({
 				<div className="live-post-like">
 					<Link to={'/like/' + item._id} className="live-post-like-link">
 						<span className="glyphicon glyphicon-heart" />
-						{item.likes.length + '次赞'}
+						{item.likes_count + '次赞'}
 					</Link>
 				</div>
 
@@ -123,16 +117,11 @@ var Live = React.createClass({
 	},
 
 	componentDidMount: function() {
-		JSocket.on('new-post', function(post) {
-			this.state.posts.unshift(post);
-			this.setState({});
+		JSocket.on('new-post', function() {
+			this._getPosts();
 		}.bind(this));
 
-		LiveUtil.getLatestPost(function(res) {
-			this.setState({
-				posts: res.posts
-			});
-		}.bind(this));
+		this._getPosts();
 	},
 
 	componentWillUnmount: function() {
@@ -151,7 +140,8 @@ var Live = React.createClass({
 					<Header />
 					<div className="live">
 						<h3 className="live-title">
-							分享直播中...
+							{/*分享直播中...*/}
+							Live Stream
 						</h3>
 						{items}
 					</div>
@@ -159,6 +149,17 @@ var Live = React.createClass({
 				</div>
 			</div>
 			);
+	},
+
+	_getPosts: function() {
+		LiveUtil.getLatestPost(function(res) {
+			this.setState({
+				posts: []
+			});
+			this.setState({
+				posts: res.posts
+			});
+		}.bind(this));
 	}
 });
 

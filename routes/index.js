@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var router = express.Router();
 var User = require('../models/User.js');
 var Post = require('../models/Post.js');
+var Comment = require('../models/Comment.js');
 
 var JSocket = require('../j.socket.js');
 
@@ -17,7 +18,6 @@ function validateJWT(t, cb) {
 	});
 }
 
-// module.exports = router;
 module.exports = function() {
 
 	var storage = multer.diskStorage({
@@ -34,7 +34,7 @@ module.exports = function() {
 	var upload = multer({
 		storage: storage,
 		fileFilter: function(req, file, cb) {
-			if (/\.(png|jpg)$/.test(file.originalname)) {
+			if (/\.(png|jpg)$/i.test(file.originalname)) {
 				cb(null, true);
 			} else {
 				cb(null, false);
@@ -114,31 +114,8 @@ module.exports = function() {
 		});
 	});
 
-	router.get('/signout', function(req, res) {
-		req.logout();
-		res.json({
-			success: true
-		});
-	});
-
-	router.get('/signedin', function(req, res) {
-		if (req.isAuthenticated()) {
-			res.json({
-				success: true,
-				user: {
-					_id: req.user._id,
-					username: req.user.username
-				}
-			});
-			return;
-		}
-		res.json({
-			success: false,
-			user: null
-		});
-	});
-
 	router.post('/ajaxupload', function(req, res) {
+		console.log('BB', req.file, req.files);
 		fileUpload(req, res, function(err) {
 			if (err) {
 				res.json({
@@ -147,6 +124,7 @@ module.exports = function() {
 				});
 				return;
 			}
+			console.log(req.file, req.files);
 			res.json({
 				success: true,
 				filename: req.file.path.replace(/public/, '')
@@ -169,14 +147,21 @@ module.exports = function() {
 			return m;
 		}
 
-		if (req.isAuthenticated()) {
+		validateJWT(req.headers['jwt'], function(err, decode) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
 			var p = new Post();
 			p.src = req.body.src;
 			p.filter = req.body.filter;
 			p.setting = req.body.setting;
 			p.caption = req.body.caption || '';
 			p.location = req.body.location;
-			p.author = req.user._id;
+			p.author = decode._id;
 			p.tags = captionToTags(p.caption);
 
 			p.save(function(err) {
@@ -204,7 +189,7 @@ module.exports = function() {
 					});
 
 				User.update({
-					_id: req.user._id
+					_id: decode._id
 				}, {
 					'$push': {
 						'posts': p._id
@@ -215,11 +200,27 @@ module.exports = function() {
 					}
 				});
 			});
-		} else {
-			res.status(401).json({
-				success: false
+		});
+
+	});
+
+	router.get('/decodejwt', function(req, res) {
+		validateJWT(req.headers['jwt'], function(err, decode) {
+			if (err) {
+				res.json({
+					success: false
+				});
+				return;
+			}
+
+			res.json({
+				success: true,
+				user: {
+					_id: decode._id,
+					username: decode.username
+				}
 			});
-		}
+		});
 	});
 
 	router.get('/latestposts', function(req, res, next) {
@@ -229,6 +230,14 @@ module.exports = function() {
 			.populate('author', {
 				username: 1,
 				profile_pic: 1
+			})
+			.populate({
+				path: 'comments',
+				select: 'author text',
+				populate: {
+					path: 'author',
+					select: 'username profile_pic'
+				}
 			})
 			.sort({
 				post_time: -1
@@ -246,10 +255,47 @@ module.exports = function() {
 			});
 	});
 
-	router.post('/like', function(req, res, next) {
+	router.get('/trending', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
 
-		if (req.isAuthenticated()) {
-			var uid = req.user._id;
+			Post
+				.find({})
+				.sort({
+					'likes_count': -1
+				})
+				.limit(10)
+				.exec(function(err, posts) {
+					if (err) {
+						return next(err);
+					}
+
+					res.json({
+						success: true,
+						posts: posts
+					});
+				});
+		});
+
+	});
+
+	router.post('/like', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err, decode) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
+
+			var uid = decode._id;
 			var pid = req.body.postId;
 
 			Post
@@ -260,6 +306,14 @@ module.exports = function() {
 					username: 1,
 					profile_pic: 1
 				})
+				.populate({
+					path: 'comments',
+					select: 'author text',
+					populate: {
+						path: 'author',
+						select: 'username profile_pic'
+					}
+				})
 				.exec(function(err, p) {
 					if (err) {
 						return next(err);
@@ -268,38 +322,148 @@ module.exports = function() {
 					var uIndex = p.likes.indexOf(uid);
 
 					if (uIndex === -1) {
-						console.log('push likes');
 						p.likes.push(uid);
+						var c = new Comment();
+						c.post = pid;
+						c.author = uid;
+						c.save(function(err) {
+							if (err) {
+								return next(err);
+							}
+							p.likes_count = p.likes.length;
+							p.save(function(err, p) {
+								res.json({
+									success: true,
+									post: p
+								});
+							});
+						});
 					} else {
-						console.log('pull likes');
 						p.likes.splice(uIndex, 1);
+						Comment.remove({
+							post: pid,
+							author: uid,
+							text: '点了一个赞'
+						}, function(err) {
+							if (err) {
+								return next(err);
+							}
+							p.likes_count = p.likes.length;
+							p.save(function(err, p) {
+								res.json({
+									success: true,
+									post: p
+								});
+							});
+						});
+					}
+				});
+
+		});
+	});
+
+	router.get('/getcomments/:postId', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
+
+			var pid = req.params.postId;
+
+			Comment
+				.find({
+					post: pid
+				})
+				.populate('author', {
+					username: 1,
+					profile_pic: 1
+				})
+				.sort({
+					create_time: 1
+				})
+				.exec(function(err, c) {
+					if (err) {
+						return next(err);
 					}
 
-					p.save(function(err, p) {
-						res.json({
-							success: true,
-							post: p
-						});
+					res.json({
+						success: true,
+						comments: c
 					});
 				});
-		} else {
-			res.status(401).json({
-				success: false
+		});
+
+	});
+
+	router.post('/postcomment', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err, decode) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
+
+			var c = new Comment();
+			c.post = req.body.post;
+			c.author = decode._id;
+			c.text = req.body.text;
+
+			c.save(function(err) {
+				if (err) {
+					return next(err);
+				}
+
+				Post.findByIdAndUpdate(c.post, {
+					$push: {
+						comments: c._id
+					}
+				}, function(err) {
+
+					if (err) {
+						return next(err);
+					}
+
+					res.json({
+						success: true,
+						comment: c
+					});
+				});
 			});
-		}
+		});
 	});
 
 	router.get('/userprofile/:username', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
 
-		if (req.isAuthenticated()) {
 			User
 				.findOne({
 					username: req.params.username
+				}, {
+					username: 1,
+					profile_pic: 1,
+					posts: 1
 				})
 				.populate('posts', {
 					src: 1,
 					filter: 1,
 					setting: 1
+				}, null, {
+					sort: {
+						post_time: -1
+					}
 				})
 				.exec(function(err, u) {
 					if (err) {
@@ -321,12 +485,86 @@ module.exports = function() {
 						user: u
 					});
 				});
-		} else {
-			res.status(401).json({
-				success: false
-			});
-		}
+		});
+	});
 
+	router.get('/getmessage', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err, decode) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
+
+			var uid = decode._id;
+
+			User
+				.findOne({
+					_id: uid
+				}, function(err, u) {
+
+					Comment
+						.find({
+							post: {
+								'$in': u.posts
+							}
+						})
+						.populate('author', {
+							username: 1,
+							profile_pic: 1
+						})
+						.populate('post', {
+							src: 1,
+							filter: 1,
+							setting: 1
+						})
+						.sort({
+							create_time: -1
+						})
+						.exec(function(err, m) {
+							if (err) {
+								return next(err);
+							}
+
+							res.json({
+								success: true,
+								message: m
+							});
+						});
+
+				});
+		});
+	});
+
+	router.get('/s', function(req, res, next) {
+		validateJWT(req.headers['jwt'], function(err) {
+			if (err) {
+				console.log(err);
+				res.status(401).json({
+					success: false
+				});
+				return;
+			}
+
+			var keyword = req.query.q;
+			console.log(keyword);
+
+			Post
+				.find({
+					caption: new RegExp(keyword)
+				}, function(err, p) {
+					if (err) {
+						return next(err);
+					}
+
+					res.json({
+						success: true,
+						posts: p
+					});
+				});
+		});
 	});
 
 	return router;

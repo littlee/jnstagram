@@ -22,6 +22,8 @@ var rootRoute = {
 			require('./routes/Post.js'),
 			require('./routes/Share.js'),
 			require('./routes/User.js'),
+			require('./routes/Comment.js'),
+			require('./routes/Message.js'),
 			{
 				path: '*',
 				component: require('./components/NotFound.js')

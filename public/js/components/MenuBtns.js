@@ -6,8 +6,8 @@ var Link = require('react-router').Link;
 var MenuBtns = React.createClass({
 	render: function() {
 		var userUrl = '/signin';
-		if (sessionStorage.getItem('j_user') !== null) {
-			userUrl = '/user/' + JSON.parse(sessionStorage.getItem('j_user')).username;
+		if (localStorage.getItem('j_user') !== null) {
+			userUrl = '/user/' + JSON.parse(localStorage.getItem('j_user')).username;
 		}
 
 		return (

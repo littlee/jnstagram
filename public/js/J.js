@@ -2,7 +2,8 @@ var browserHistory = require('react-router').browserHistory;
 
 function isSignedIn() {
 	// return true;
-	return sessionStorage.getItem('j_user') !== null;
+	// return sessionStorage.getItem('j_user') !== null;
+	return localStorage.getItem('jwt') !== null;
 }
 
 var J = {};
@@ -23,12 +24,22 @@ J.auth = function() {
 		req.on('response', function(res) {
 			if (res.status === 401) {
 				// push or replace
-				browserHistory.push({
-					pathname: '/signin'
-				});
+				var p = window.location.pathname;
+				setTimeout(function() {
+					browserHistory.replace({
+						pathname: '/signin',
+						state: {
+							nextPathname: p
+						}
+					});
+				}, 0);
 			}
 		});
 	};
+};
+
+J.getToken = function() {
+	return localStorage.getItem('jwt');
 };
 
 module.exports = J;
