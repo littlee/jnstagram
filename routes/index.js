@@ -42,7 +42,8 @@ module.exports = function() {
 		}
 	});
 
-	var fileUpload = upload.single('file');
+	// var fileUpload = upload.single('file');
+	var fileUpload = upload.array('file', 1);
 
 	router.post('/signin', function(req, res, next) {
 		passport.authenticate('local', function(err, user, info) {
@@ -115,7 +116,6 @@ module.exports = function() {
 	});
 
 	router.post('/ajaxupload', function(req, res) {
-		console.log('BB', req.file, req.files);
 		fileUpload(req, res, function(err) {
 			if (err) {
 				res.json({
@@ -124,10 +124,9 @@ module.exports = function() {
 				});
 				return;
 			}
-			console.log(req.file, req.files);
 			res.json({
 				success: true,
-				filename: req.file.path.replace(/public/, '')
+				filename: req.files[0].path.replace(/public/, '')
 			});
 		});
 	});
