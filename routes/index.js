@@ -32,14 +32,7 @@ module.exports = function() {
 	});
 
 	var upload = multer({
-		storage: storage,
-		fileFilter: function(req, file, cb) {
-			if (/\.(png|jpg)$/i.test(file.originalname)) {
-				cb(null, true);
-			} else {
-				cb(null, false);
-			}
-		}
+		storage: storage
 	});
 
 	// var fileUpload = upload.single('file');
